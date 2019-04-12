@@ -22,9 +22,20 @@ function NewConection(remote)
 {
   clients.push(remote);
   clientPort.push(remote.port);
+
   var answer = util.format("Nueva conexion de: " + remote.port);
   Broadcast(answer,remote)
   console.log(answer);
+}
+
+function DeleteConection(remote)
+{
+  var answer = util.format("Desconexion de: " + remote.port);
+  Broadcast(answer,remote)
+  console.log(answer);
+
+  clients.splice(clients.indexOf(remote), 1)
+  clientPort.splice(clientPort.indexOf(remote.port), 1)
 }
 
 function Broadcast(message, remote)
@@ -57,25 +68,32 @@ server.on('message', function (message, remote) {
   //   }
   //         ///Envia a todos los clientes
   // });
-
-  
-      if(clientPort.includes(remote.port))
-      {
+  if(message == "exit")
+  {
+    DeleteConection(remote);
+  }
+  else
+  {
+    if(clientPort.includes(remote.port))
+    {
         existingport = true;
         // console.info("entro a repetido")
-      }
-      else
-      {
+    }
+    else
+    {
         // console.info("entro a nuevo")
-        NewConection(remote);
-        existingport=false;
-      }
-  if(existingport)
-  {
-    var answer = util.format('%d => %s', remote.port , message)
-    console.log(answer);
-    Broadcast(answer,remote);
+      NewConection(remote);
+      existingport=false;
+    }
+    if(existingport)
+    {
+      var answer = util.format('%d: %s', remote.port , message)
+      console.log(answer);
+      Broadcast(answer,remote);
+    }
   }
+  
+      
   
   // console.log(clients);
   // console.log(clientPort);

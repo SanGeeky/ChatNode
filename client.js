@@ -14,13 +14,23 @@ function Command() {
 
 		var message = chunk.toString().replace(/\n|\n/g, '');
 
-		
-		var object  = message;
-		
-
-	 	var buffer  = new Buffer(object);
-	 	client.send(buffer, 0, buffer.length, PORT, HOST);
-
+		var buffer  = new Buffer(message);
+	 	// client.send(buffer, 0, buffer.length, PORT, HOST);
+		if( message == "exit")
+		{
+			console.log("\n \nHa salido del Chat ")
+			console.log("Presione ctrl+C");
+			client.send(buffer, 0, buffer.length, PORT, HOST, function(err, bytes) {
+				if (err) throw err;
+				client.close();
+			});
+			
+		}
+		else
+		{
+	 		client.send(buffer, 0, buffer.length, PORT, HOST);
+		}
+		//var object  = message;
 	});
 
 }
@@ -33,9 +43,20 @@ function Command() {
 
 // });
 
-client.on('message', function (answer) {
-    console.log(' ' + answer);
+client.bind();
+client.on('listening', function() {
 
+	var buffer = new Buffer("\n");
+
+	console.log('Cliente conectado al puerto %d.', client.address().port);
+	console.log('(Escriba "Exit" para terminar)');
+	client.send(buffer, 0, buffer.length, PORT, HOST);
+    //Aqui envia un JSON por la direccion sumistrada en server
+});
+
+
+client.on('message', function (answer) {
+    console.log(' ' +answer);
 });
 
 
@@ -43,7 +64,7 @@ process.stdin.resume();
 Command();
 
 
-////MOstrar mensaje de bienvenida
+////Mostrar mensaje de bienvenida
 // client.bind();
 // client.on('listening', function() {
 
