@@ -19,10 +19,11 @@ function Command() {
 		if( message == "exit")
 		{
 			console.log("\n \nHa salido del Chat ")
-			console.log("Presione ctrl+C");
+			console.log("/*/*/*/*Hasta Pronto/*/*/*/*/");
 			client.send(buffer, 0, buffer.length, PORT, HOST, function(err, bytes) {
 				if (err) throw err;
 				client.close();
+				process.exit();
 			});
 			
 		}
@@ -49,7 +50,7 @@ client.on('listening', function() {
 	var buffer = new Buffer("\n");
 
 	console.log('Cliente conectado al puerto %d.', client.address().port);
-	console.log('(Escriba "Exit" para terminar)');
+	console.log('(Escriba "exit" para terminar)');
 	client.send(buffer, 0, buffer.length, PORT, HOST);
     //Aqui envia un JSON por la direccion sumistrada en server
 });
