@@ -10,9 +10,9 @@ var client = dgram.createSocket('udp4');
 
 function Command() {
 
-	process.stdin.on('data', function(chunk) {
+	process.stdin.on('data', function(frase) {
 
-		var message = chunk.toString().replace(/\n|\n/g, '');
+		var message = frase.toString().replace(/\n|\n/g, '');
 
 		var buffer  = new Buffer(message);
 	 	// client.send(buffer, 0, buffer.length, PORT, HOST);
@@ -57,7 +57,7 @@ client.on('listening', function() {
 
 
 client.on('message', function (answer) {
-    console.log(' ' +answer);
+    console.log(' ' + answer);
 });
 
 

@@ -3,6 +3,7 @@ var HOST = '127.0.0.1';
 
 var clients = [];
 var clientPort =[];
+var objectToSave = [];
 
 var dgram = require('dgram');
 var util = require('util');
@@ -15,7 +16,7 @@ var server = dgram.createSocket('udp4');
 
 server.on('listening', function () {
     var address = server.address();
-    console.log('UDP Server listening on ' + address.address + ":" + address.port);
+    console.log(' Servidor UDP esuchando en ' + address.address + ":" + address.port);
 });
 
 function NewConection(remote)
@@ -23,14 +24,14 @@ function NewConection(remote)
   clients.push(remote);
   clientPort.push(remote.port);
 
-  var answer = util.format("Nueva conexion de: " + remote.port);
+  var answer = util.format("\nNueva conexion de cliente: [" + remote.address+':'+remote.port+"]");
   Broadcast(answer,remote)
   console.log(answer);
 }
 
 function DeleteConection(remote)
 {
-  var answer = util.format("Desconexion de: " + remote.port);
+  var answer = util.format("Desconexion de: " + "<" + remote.address + ':' + remote.port + ">");
   Broadcast(answer,remote)
   console.log(answer);
 
@@ -42,6 +43,8 @@ function Broadcast(message, remote)
 {
   var answer = new Buffer(message);
   
+  Save(message);
+  
   clients.forEach(function(client) {
     
     if (clientPort.includes(remote.port) && client.port != remote.port ) {
@@ -50,8 +53,21 @@ function Broadcast(message, remote)
   });
 }
 
+function Save(message)
+{
+  const fs = require('fs');
+ 
+  objectToSave.push(message)
 
-server.on('message', function (message, remote) {
+  fs.writeFile('historial.json', JSON.stringify(objectToSave),'utf8', (err) => {
+    if (err) throw err;
+    //console.log('The file has been saved!');
+});
+}
+
+
+server.on('message', function (message, remote) 
+{
   var existingport=false;
   //var answer = new Buffer.from(message);
 
@@ -87,7 +103,8 @@ server.on('message', function (message, remote) {
     }
     if(existingport)
     {
-      var answer = util.format('%d: %s', remote.port , message)
+      var answer = util.format('<'+remote.address+':'+remote.port+">:    "+message)                    // Si la bandera es true, se distribuye el mensaje del cliente
+      //var answer = util.format('%d: %s', remote.port , message)
       console.log(answer);
       Broadcast(answer,remote);
     }
