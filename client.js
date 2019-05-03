@@ -1,24 +1,21 @@
-var PORT = 33333;
-var HOST = '127.0.0.1';
+var PORT = 33333;  										///Definimos el puerto por donde vamos a transmitir nuestro socket
+var HOST = '127.0.0.1';									/// Direccion IP del servidor
 
-var dgram = require('dgram');
+var dgram = require('dgram');							///Solicita un modulo de datagarama
 
 
-//var message = new Buffer.from('My KungFu is Good!');
-
-var client = dgram.createSocket('udp4');
+var client = dgram.createSocket('udp4');				////Creación de socket del cliente 
 
 function Command() {
 
-	process.stdin.on('data', function(frase) {
+	process.stdin.on('data', function(frase) {                       ///Habilita la entrada de datos en la terminal
 
-		var message = frase.toString().replace(/\n|\n/g, '');
+		var message = frase.toString().replace(/\n|\n/g, '');		/// Se almacena el mensaje
 
-		var buffer  = new Buffer(message);
-	 	// client.send(buffer, 0, buffer.length, PORT, HOST);
+		var buffer  = new Buffer(message);							/// Se guarda el mensaje en un Buffer para ser enviado
 		if( message == "exit")
 		{
-			console.log("\n \nHa salido del Chat ")
+			console.log("\n \nHa salido del Chat ")					/// Si el mensaje es exit se cierra la consola y se solicita la salida en el server
 			console.log("/*/*/*/*Hasta Pronto/*/*/*/*/");
 			client.send(buffer, 0, buffer.length, PORT, HOST, function(err, bytes) {
 				if (err) throw err;
@@ -29,23 +26,14 @@ function Command() {
 		}
 		else
 		{
-	 		client.send(buffer, 0, buffer.length, PORT, HOST);
+	 		client.send(buffer, 0, buffer.length, PORT, HOST);   //// Se envia el mensaje en el buffer a traves de los puerto y direcciones establecidas anteriormente
 		}
-		//var object  = message;
 	});
 
 }
 
-
-
-// client.send(message, 0, message.length, PORT, HOST, function(err, bytes) {
-//     if (err) throw err;
-//     console.log('UDP message sent to ' + HOST +':'+ PORT);
-
-// });
-
 client.bind();
-client.on('listening', function() {
+client.on('listening', function() {          //// Se habilita la conexion con el server
 
 	var buffer = new Buffer("\n");
 
@@ -56,23 +44,10 @@ client.on('listening', function() {
 });
 
 
-client.on('message', function (answer) {
+client.on('message', function (answer) {    //Cliente escucha y recibe un mensaje
     console.log(' ' + answer);
 });
 
 
 process.stdin.resume();
 Command();
-
-
-////Mostrar mensaje de bienvenida
-// client.bind();
-// client.on('listening', function() {
-
-// 	var buffer = new Buffer("\n");
-
-// 	console.log('Cliente conectado al puerto %d.', client.address().port);
-// 	console.log('(Escriba "Exit" para terminar)');
-// 	client.send(buffer, 0, buffer.length, PORT, HOST);
-//     //Aqui envia un JSON por la direccion sumistrada en server
-// });
